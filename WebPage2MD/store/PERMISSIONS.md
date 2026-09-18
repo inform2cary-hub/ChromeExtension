@@ -43,18 +43,17 @@ button, chooses the context-menu item, or presses Alt+M or Alt+Shift+M on that p
 **Paste this (English):**
 
 ```
-The conversion itself runs inside the page, because it needs the page's live DOM: element
-structure, computed visibility, resolved image URLs, and the user's current text selection. The
-extension injects its extraction and conversion scripts into the tab with
-chrome.scripting.executeScript at the moment the user requests a capture, reads the result, and
-does nothing further.
+The conversion runs inside the page because it needs the page's live DOM: element structure,
+computed visibility, resolved image URLs, and the user's current text selection. The extension
+injects its extraction and conversion scripts with chrome.scripting.executeScript at the moment
+the user requests a capture, reads the result, and does nothing further.
 
 A statically declared content script is not an acceptable substitute here: it would have to be
 registered against every page the user visits and would run on all of them. Dynamic injection
 runs only on the one tab the user asked about, only when they asked.
 
 The page is not modified. Conversion is performed on a copy of the node tree obtained with
-cloneNode; the only change ever made to the live page is a temporary marker attribute needed to
+cloneNode. The only change ever made to the live page is a temporary marker attribute needed to
 evaluate computed style, which is removed in a finally block before conversion begins. After a
 capture, the live page has the same DOM node count and the same HTML length as before.
 ```

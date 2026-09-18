@@ -1,0 +1,139 @@
+WebPage2MD - Chrome Web Store 權限理由（英文，逐段貼進 Dashboard）
+======================================================================
+
+
+----------------------------------------------------------------------
+[1] activeTab
+----------------------------------------------------------------------
+
+When the user asks to capture a page, the extension needs access to that one tab in order to read
+its content and convert it to Markdown. activeTab grants exactly that: access to the tab the user
+acted on, granted by that action, for as long as it is needed and no longer.
+
+This is used deliberately instead of host permissions. The extension declares no host permissions
+and no optional host permissions, so it has no standing access to any website and cannot read any
+page in the background. It gains access to a page only at the moment the user clicks the toolbar
+button, chooses the context-menu item, or presses Alt+M or Alt+Shift+M on that page.
+
+
+----------------------------------------------------------------------
+[2] scripting
+----------------------------------------------------------------------
+
+The conversion runs inside the page because it needs the page's live DOM: element structure,
+computed visibility, resolved image URLs, and the user's current text selection. The extension
+injects its extraction and conversion scripts with chrome.scripting.executeScript at the moment
+the user requests a capture, reads the result, and does nothing further.
+
+A statically declared content script is not an acceptable substitute here: it would have to be
+registered against every page the user visits and would run on all of them. Dynamic injection
+runs only on the one tab the user asked about, only when they asked.
+
+The page is not modified. Conversion is performed on a copy of the node tree obtained with
+cloneNode. The only change ever made to the live page is a temporary marker attribute needed to
+evaluate computed style, which is removed in a finally block before conversion begins. After a
+capture, the live page has the same DOM node count and the same HTML length as before.
+
+
+----------------------------------------------------------------------
+[3] downloads
+----------------------------------------------------------------------
+
+One of the extension's three outputs is a .md file, and chrome.downloads.download is how it is
+written to the user's computer. It is called once per save, only after the user has clicked "Save
+as .md", used the context-menu save item, or pressed Alt+M, and only with the Markdown that
+capture just produced. The extension does not enumerate, search, open, modify or delete the
+user's other downloads, and does not use the downloads API to fetch anything from the network.
+If the user has enabled "always ask where to save", the saveAs flag is passed so Chrome shows its
+own Save As dialog.
+
+
+----------------------------------------------------------------------
+[4] offscreen
+----------------------------------------------------------------------
+
+A Manifest V3 service worker has no DOM. Two of this extension's operations need one:
+
+1. Saving. Writing the Markdown to a file requires a Blob URL, but the service worker has no
+   URL.createObjectURL, and passing a long document as a data: URL is truncated by the downloads
+   API. The offscreen document creates the Blob URL and revokes it after the download starts.
+2. Copying. Writing to the clipboard requires a document. The offscreen document performs the
+   copy with document.execCommand('copy'), because an offscreen document never holds focus and
+   navigator.clipboard.writeText is therefore rejected in it.
+
+The offscreen document is created with the BLOBS and CLIPBOARD reasons, is used for nothing else,
+loads no remote content, renders nothing to the user, and uses no extension API other than
+chrome.runtime for messaging (Chrome exposes no other chrome.* API inside an offscreen document).
+The chrome.downloads call itself runs back in the service worker.
+
+
+----------------------------------------------------------------------
+[5] clipboardWrite
+----------------------------------------------------------------------
+
+"Copy" is one of the extension's three outputs, and the one most users reach for: it puts the
+converted Markdown straight onto the clipboard so it can be pasted into a note-taking app or
+editor. The permission is exercised only in direct response to a user action - the Copy button in
+the popup, the "Copy Markdown" or "Copy selection as Markdown" context-menu items, the Copy
+button on the preview page, or Alt+Shift+M - and it writes only the Markdown produced by that
+capture. The extension never reads the clipboard; clipboardRead is not requested and no clipboard
+content is accessed at any point.
+
+
+----------------------------------------------------------------------
+[6] storage
+----------------------------------------------------------------------
+
+Two uses, both local:
+
+1. Settings. The extension remembers the user's own conversion preferences so they are not
+   re-entered on every page: extraction rules (main content only, strip navigation and sidebars,
+   prefer selection), Markdown syntax style, link handling mode, image handling mode, front-matter
+   fields, the filename template, the download subfolder, and the interface language. These go to
+   chrome.storage.local.
+2. Passing the preview document. When the user chooses "Preview", the converted Markdown is put
+   into chrome.storage.session for the preview tab to read, because a long document cannot be
+   passed through a URL. chrome.storage.session is in-memory only and is cleared when the browser
+   closes.
+
+chrome.storage.sync is not used, so nothing is uploaded to a Google account. No browsing history
+or personal data is stored, and captured page content is not retained after the capture completes.
+
+
+----------------------------------------------------------------------
+[7] contextMenus
+----------------------------------------------------------------------
+
+The extension adds right-click menu items so the user can capture without moving to the toolbar:
+"Save as Markdown", "Copy Markdown", "Preview Markdown", "Copy selection as Markdown" (shown when
+text is selected), and an item that opens the options page. The items are registered once on
+install and do not read or act on page content by themselves - each simply invokes the same
+capture the toolbar button performs.
+
+
+----------------------------------------------------------------------
+[8] Host permissions
+----------------------------------------------------------------------
+
+This extension declares no host permissions and no optional host permissions. It has no standing
+access to any website. Access to a page is obtained only through activeTab, granted by the user's
+own action at the moment they ask for that page to be captured, and the extension makes no network
+requests of any kind.
+
+
+----------------------------------------------------------------------
+[9] Remote code
+----------------------------------------------------------------------
+
+No remote code. All JavaScript, HTML and CSS that this extension executes is contained in the
+uploaded package and is reviewable in it. It loads no scripts from any server, includes no CDN
+<script> tags, uses no eval(), no new Function(), no importScripts() of a remote URL, no remotely
+hosted WebAssembly, and no remote module imports. It makes no network requests at all: it declares
+no host permissions and never contacts any server, including the developer's.
+
+The scripts injected with chrome.scripting.executeScript are files inside this package
+(src/lib/markdown.js, src/content/html2md.js, src/content/extract.js, src/content/convert.js) and
+are listed in the package for review. Injecting packaged scripts into a tab is not remote code.
+
+Note also that the extension reads HTML from the pages the user captures. That HTML is parsed as
+data and converted to Markdown text; it is never evaluated or executed as script.

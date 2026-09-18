@@ -1,0 +1,31 @@
+Take the article you are reading and get Markdown you would have been happy to write yourself — no navigation, no sidebar, no cookie banner, no "you might also like".
+
+Web Page to Markdown finds the real content of a page, converts it, and hands it to you three ways: saved as a .md file, copied to the clipboard, or opened in a preview tab where you can fix anything before you keep it.
+
+WHAT IT GETS RIGHT
+
+• Just the article. The extension scores candidate containers by how much text they hold against how much of that text is links, and picks the article body. When the page is too ambiguous to call, it says so and gives you the whole page rather than quietly handing you a fragment.
+• The structure survives. Headings, nested and ordered lists, task lists, blockquotes, tables (including alignment), fenced code blocks with a guessed language, images with captions, collapsible sections, and definition lists.
+• Maths comes back as maths. MathML, KaTeX and MathJax are converted back to $LaTeX$ rather than the rendered soup you would get from a copy-paste.
+• Links, your way. Inline, reference-style with the URLs collected at the end, bare <URL>, or stripped down to the text. Same for images: keep them, keep only the alt text, or drop them.
+• Front matter that is actually useful. A YAML block with title, source URL, author, publication date, site name, capture time and tags — each field individually switchable, plus any custom YAML you want appended.
+• Output that does not fight your editor. Escaping is applied only where it changes meaning, so snake_case stays snake_case and you do not get a file full of backslashes. Code fences grow to four backticks when the code itself contains three.
+• Selection-aware. Highlight a passage and it converts just that passage.
+• Filename templates from {title}, {host}, {date} and more, into a subfolder of your choice.
+• Alt+M to save, Alt+Shift+M to copy, or use the toolbar button or the right-click menu.
+
+IT DOES NOT TOUCH YOUR PAGE
+
+The conversion runs on a copy of the page's node tree, not the page itself. When it finishes, the live page has exactly the same DOM it had before — same node count, same HTML length. Nothing is hidden, rewritten, or left behind.
+
+PRIVACY
+
+Everything happens in your browser. The extension has no server, makes no network requests, and collects nothing. It asks for no host permissions, so it has no standing access to any site — it reads a page only when you ask it to, on the tab you asked about. Your settings stay in your browser's local storage.
+
+LANGUAGES
+
+The interface is available in English and Traditional Chinese. English is the default; switch it on the options page.
+
+GOOD TO KNOW
+
+Chrome's own pages (chrome://), the Web Store, and other extension pages cannot be captured — the browser blocks extensions there. Output is UTF-8 without a BOM, per Markdown convention.
