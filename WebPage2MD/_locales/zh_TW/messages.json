@@ -1,0 +1,22 @@
+{
+  "extName": {
+    "message": "網頁轉 Markdown — 乾淨的文章擷取",
+    "description": "Extension name shown in Chrome and on the Chrome Web Store."
+  },
+  "extDescription": {
+    "message": "把目前的網頁擷取成乾淨的 Markdown。自動只取文章主體，支援 YAML front matter、連結與圖片處理，可存檔或複製。",
+    "description": "Extension description shown in Chrome and on the Chrome Web Store (132 characters max)."
+  },
+  "actionTitle": {
+    "message": "網頁轉 Markdown",
+    "description": "Tooltip on the toolbar button."
+  },
+  "commandSaveMarkdown": {
+    "message": "把目前網頁存成 Markdown 檔",
+    "description": "Description of the Alt+M keyboard shortcut."
+  },
+  "commandCopyMarkdown": {
+    "message": "把目前網頁的 Markdown 複製到剪貼簿",
+    "description": "Description of the Alt+Shift+M keyboard shortcut."
+  }
+}

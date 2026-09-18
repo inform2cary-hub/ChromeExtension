@@ -1,0 +1,215 @@
+/*
+ * 譯文與 HUD 樣式。
+ * 外層 .ait-tr 負責排版（獨立一行、間距、色彩），
+ * 內層 .ait-tr-inner 負責裝飾（虛線底線 / 虛線外框 / 淡色底），
+ * 這樣裝飾才能跟著每一行文字斷行，做出範例圖那種逐行虛線效果。
+ */
+
+.ait-tr {
+  display: block !important;
+  margin: 0.45em 0 0.1em !important;
+  padding: 0;
+  color: var(--ait-color, #2a6f97) !important;
+  font-family: var(--ait-font, inherit);
+  font-size: calc(1em * var(--ait-font-scale, 1)) !important;
+  font-style: normal;
+  font-weight: inherit;
+  line-height: 1.75 !important;
+  text-align: inherit;
+  text-indent: 0;
+  letter-spacing: 0.01em;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+.ait-tr-inner {
+  color: inherit !important;
+  font: inherit;
+  background: none;
+}
+
+html.ait-off .ait-tr {
+  display: none !important;
+}
+
+/* 預設樣式：段首一條虛線 + 每行虛線底線（對照範例圖） */
+.ait-tr[data-ait-style="dashed-underline"] {
+  border-top: 1px dashed var(--ait-line, rgba(42, 111, 151, 0.55));
+  padding-top: 0.4em !important;
+}
+
+.ait-tr[data-ait-style="dashed-underline"] .ait-tr-inner {
+  text-decoration-line: underline;
+  text-decoration-style: dashed;
+  text-decoration-color: var(--ait-line, rgba(42, 111, 151, 0.55));
+  text-decoration-thickness: 1px;
+  text-underline-offset: 5px;
+  text-decoration-skip-ink: none;
+}
+
+/* 每一行都框起來 */
+.ait-tr[data-ait-style="dashed-box"] .ait-tr-inner {
+  border: 1px dashed var(--ait-line, rgba(42, 111, 151, 0.55));
+  border-radius: 3px;
+  padding: 1px 4px;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+/* 淡色底 */
+.ait-tr[data-ait-style="highlight"] .ait-tr-inner {
+  background: var(--ait-bg, rgba(42, 111, 151, 0.09));
+  border-radius: 3px;
+  padding: 1px 4px;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+/* 左側色條 */
+.ait-tr[data-ait-style="quote"] {
+  border-left: 3px solid var(--ait-line, rgba(42, 111, 151, 0.55));
+  padding-left: 0.65em !important;
+}
+
+/* 載入中的三點動畫 */
+.ait-tr.ait-loading {
+  opacity: 0.75;
+}
+
+.ait-dots {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  vertical-align: middle;
+}
+
+.ait-dots i {
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.35;
+  animation: ait-dot 1s infinite ease-in-out;
+}
+
+.ait-dots i:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.ait-dots i:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes ait-dot {
+  0%, 100% { opacity: 0.25; transform: translateY(0); }
+  50% { opacity: 1; transform: translateY(-2px); }
+}
+
+.ait-tr.ait-error {
+  color: #c0392b !important;
+  cursor: help;
+}
+
+.ait-tr.ait-error .ait-tr-inner {
+  text-decoration-line: underline;
+  text-decoration-style: dotted;
+  text-decoration-color: #c0392b;
+  border: 0;
+  background: none;
+}
+
+/* ------------------------------------------------------------- 進度提示 HUD */
+
+#ait-hud {
+  position: fixed !important;
+  right: 16px !important;
+  bottom: 16px !important;
+  z-index: 2147483600 !important;
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+  max-width: 320px;
+  margin: 0 !important;
+  padding: 8px 10px !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  border-radius: 10px !important;
+  background: #1f2933 !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.28) !important;
+  color: #f2f6f9 !important;
+  font: 13px/1.4 -apple-system, "Segoe UI", "Microsoft JhengHei", sans-serif !important;
+  text-align: left !important;
+  opacity: 0.96;
+  transition: opacity 0.2s ease;
+}
+
+#ait-hud[hidden] {
+  display: none !important;
+}
+
+#ait-hud .ait-hud-text {
+  flex: 1 1 auto;
+  color: inherit !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#ait-hud.ait-hud-busy .ait-hud-text {
+  white-space: normal;
+}
+
+#ait-hud .ait-hud-spin {
+  flex: 0 0 auto;
+  width: 12px;
+  height: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.28);
+  border-top-color: #7fd1ff;
+  border-radius: 50%;
+  animation: ait-spin 0.8s linear infinite;
+}
+
+#ait-hud .ait-hud-spin[hidden] {
+  display: none !important;
+}
+
+@keyframes ait-spin {
+  to { transform: rotate(360deg); }
+}
+
+#ait-hud .ait-hud-btn {
+  flex: 0 0 auto;
+  min-width: 22px;
+  height: 22px;
+  margin: 0;
+  padding: 0 7px;
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #f2f6f9 !important;
+  font: inherit;
+  line-height: 20px;
+  cursor: pointer;
+}
+
+#ait-hud .ait-hud-btn:hover {
+  background: rgba(255, 255, 255, 0.18) !important;
+}
+
+#ait-hud .ait-hud-btn[hidden] {
+  display: none !important;
+}
+
+#ait-hud .ait-hud-close {
+  font-size: 15px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ait-dots i,
+  #ait-hud .ait-hud-spin {
+    animation: none;
+  }
+}

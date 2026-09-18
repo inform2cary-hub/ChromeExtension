@@ -1,0 +1,18 @@
+{
+  "extName": {
+    "message": "網頁轉 PDF — 文字可選取、可搜尋",
+    "description": "Extension name shown in Chrome and on the Chrome Web Store."
+  },
+  "extDescription": {
+    "message": "把目前的網頁轉成文字可選取、可搜尋的 PDF。可設定紙張、邊界、頁首頁尾與書籤，並只輸出文章主要內容。",
+    "description": "Extension description shown in Chrome and on the Chrome Web Store (132 characters max)."
+  },
+  "actionTitle": {
+    "message": "網頁轉 PDF",
+    "description": "Tooltip on the toolbar button."
+  },
+  "commandExportPdf": {
+    "message": "把目前網頁轉成 PDF",
+    "description": "Description of the Alt+P keyboard shortcut."
+  }
+}

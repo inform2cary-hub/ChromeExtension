@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title data-i18n="app.optionsTitle">Web Page to PDF — Settings</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="page-head">
+    <div class="brand">
+      <span class="logo" aria-hidden="true">PDF</span>
+      <div>
+        <h1><span data-i18n="app.name">Web Page to PDF</span> <span class="ver" id="version"></span></h1>
+        <p class="lead" data-i18n="options.lead">Paper, margins and other everyday options live in the toolbar popup. This page holds filenames, headers and footers, and page clean-up rules.</p>
+      </div>
+    </div>
+    <div class="head-side">
+      <div class="lang-box">
+        <label class="lang-label" for="langSelect">
+          <span class="globe" aria-hidden="true">🌐</span>
+          <span data-i18n="options.language">Language</span>
+        </label>
+        <select id="langSelect"></select>
+        <span class="lang-hint" data-i18n="options.languageHint">Applies to this extension’s interface only.</span>
+      </div>
+      <span class="saved" id="savedTag" data-i18n="options.saved" hidden>Saved</span>
+    </div>
+  </header>
+
+  <section class="card">
+    <h2 data-i18n="options.sec1">1. Filename and location</h2>
+    <div class="grid">
+      <label class="field wide">
+        <span class="label" data-i18n="options.filenameTemplate">Filename template</span>
+        <input type="text" id="filenameTemplate" spellcheck="false" placeholder="{title}">
+        <span class="hint">
+          <span data-i18n="options.filenameFields">Available fields:</span>
+          <code>{title}</code> <code>{host}</code> <code>{domain}</code> <code>{path}</code>
+          <code>{date}</code> <code>{time}</code> <code>{datetime}</code>
+          <code>{yyyy}</code> <code>{month}</code> <code>{day}</code>
+          <code>{hour}</code> <code>{minute}</code> <code>{second}</code>
+        </span>
+      </label>
+      <label class="field">
+        <span class="label" data-i18n="options.subfolder">Download subfolder (optional)</span>
+        <input type="text" id="subfolder" spellcheck="false" data-i18n-ph="options.subfolderPh" placeholder="e.g. WebPDF">
+        <span class="hint" data-i18n="options.subfolderHint">Relative to the browser’s download folder. Leave blank to save directly there.</span>
+      </label>
+      <label class="field check">
+        <input type="checkbox" id="saveAs">
+        <span data-i18n="options.saveAs">Always open the “Save as” dialog</span>
+      </label>
+      <div class="field wide">
+        <span class="label" data-i18n="options.filenamePreview">Filename preview</span>
+        <pre class="result" id="filenamePreview"></pre>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2 data-i18n="options.sec2">2. Header and footer</h2>
+    <p class="hint" data-i18n="options.sec2Hint">Tick “Add header and footer” in the popup for these to apply. When top and bottom margins are too small, export widens them to 15 mm, otherwise Chrome squeezes the header out of sight.</p>
+    <div class="grid">
+      <label class="field">
+        <span class="label" data-i18n="options.headerLeft">Header left</span>
+        <select id="headerLeft"></select>
+      </label>
+      <label class="field">
+        <span class="label" data-i18n="options.headerRight">Header right</span>
+        <select id="headerRight"></select>
+      </label>
+      <label class="field">
+        <span class="label" data-i18n="options.footerLeft">Footer left</span>
+        <select id="footerLeft"></select>
+      </label>
+      <label class="field">
+        <span class="label" data-i18n="options.footerRight">Footer right</span>
+        <select id="footerRight"></select>
+      </label>
+      <label class="field">
+        <span class="label" data-i18n="options.hfFontPt">Font size (pt)</span>
+        <input type="number" id="headerFooterFontPt" min="5" max="16" step="1">
+      </label>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2 data-i18n="options.sec3">3. PDF structure</h2>
+    <div class="grid">
+      <label class="field check">
+        <input type="checkbox" id="taggedPdf">
+        <span data-i18n="options.taggedPdf">Generate a tagged PDF (screen readers can follow the structure; recommended)</span>
+      </label>
+      <label class="field check">
+        <input type="checkbox" id="documentOutline">
+        <span data-i18n="options.documentOutline">Build a bookmark outline from the page’s heading levels</span>
+      </label>
+      <label class="field check">
+        <input type="checkbox" id="preferCSSPageSize">
+        <span data-i18n="options.preferCSSPageSize">Prefer the page’s own <code>@page</code> size (overrides the paper setting)</span>
+      </label>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2 data-i18n="options.sec4">4. Page clean-up</h2>
+    <div class="grid">
+      <label class="field wide">
+        <span class="label" data-i18n="options.removeSelectors">CSS selectors to hide before export</span>
+        <textarea id="removeSelectors" rows="3" spellcheck="false" placeholder=".cookie-banner, #newsletter-popup, .ad-slot"></textarea>
+        <span class="hint" data-i18n="options.removeSelectorsHint">One per line, or comma separated. Invalid selectors are ignored and never break the export.</span>
+      </label>
+      <label class="field check">
+        <input type="checkbox" id="expandDetails">
+        <span data-i18n="options.expandDetails">Expand collapsed sections (<code>&lt;details&gt;</code>)</span>
+      </label>
+      <label class="field">
+        <span class="label" data-i18n="options.settleMs">Extra wait after clean-up (ms)</span>
+        <input type="number" id="settleMs" min="0" max="5000" step="100">
+        <span class="hint" data-i18n="options.settleMsHint">Raise this when a page needs time to reflow or load fonts. 400 is usually enough.</span>
+      </label>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2 data-i18n="options.sec5">5. How it works</h2>
+    <ul class="notes">
+      <li data-i18n="options.note1">Export uses Chrome’s own print engine (CDP <code>Page.printToPDF</code>), so the output is real selectable, searchable text — not a screenshot.</li>
+      <li data-i18n="options.note2">Reaching that engine requires the “debugger” permission. Chrome shows a “debugging this browser” bar at the top of the tab while exporting; it disappears when the export finishes.</li>
+      <li data-i18n="options.note3">If DevTools is already open on that tab the export fails because only one debugger can attach. Close DevTools first.</li>
+      <li data-i18n="options.note4">Chrome’s built-in pages (<code>chrome://</code>), extension pages and the Chrome Web Store cannot be exported. That is a browser restriction.</li>
+      <li data-i18n="options.note5">For pages that refuse to export, open “Other ways” in the popup and use Chrome’s print dialog instead.</li>
+    </ul>
+  </section>
+
+  <footer class="page-foot">
+    <span class="hint" data-i18n="options.autosave">Settings save automatically.</span>
+    <button type="button" class="btn ghost danger" id="btnReset" data-i18n="options.reset">Restore defaults</button>
+  </footer>
+</div>
+
+<script src="../lib/constants.js"></script>
+<script src="../lib/i18n.js"></script>
+<script src="../lib/settings.js"></script>
+<script src="../lib/pdf.js"></script>
+<script src="options.js"></script>
+</body>
+</html>

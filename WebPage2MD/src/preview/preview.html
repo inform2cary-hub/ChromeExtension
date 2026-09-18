@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title data-i18n="preview.title">Markdown preview</title>
+  <link rel="stylesheet" href="preview.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="head">
+    <div class="brand">
+      <span class="logo" aria-hidden="true">M↓</span>
+      <div>
+        <h1 id="docTitle" data-i18n="preview.title">Markdown preview</h1>
+        <p class="sub" id="docSource" data-i18n="preview.loading">Loading…</p>
+      </div>
+    </div>
+    <div class="actions">
+      <button type="button" class="btn ghost" id="btnSelectAll" data-i18n="preview.selectAll">Select all</button>
+      <button type="button" class="btn ghost" id="btnCopy" data-i18n="preview.copy">Copy</button>
+      <button type="button" class="btn" id="btnDownload" data-i18n="preview.download">Save as .md</button>
+    </div>
+  </header>
+
+  <div class="bar" id="statsBar"></div>
+  <p class="notes" id="notes"></p>
+
+  <textarea id="editor" spellcheck="false"
+            data-i18n-aria="preview.editorAria"
+            aria-label="Markdown source, editable before you save"></textarea>
+  <p class="status" id="status" role="status" aria-live="polite"></p>
+</div>
+
+<script src="../lib/constants.js"></script>
+<script src="../lib/i18n.js"></script>
+<script src="../lib/settings.js"></script>
+<script src="../lib/markdown.js"></script>
+<script src="preview.js"></script>
+</body>
+</html>

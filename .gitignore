@@ -1,0 +1,39 @@
+# 各擴充功能目錄下另有自己的 .gitignore，這份是整個工作區的第二道防線。
+
+# CRX 簽章私鑰。洩漏等於別人可以冒充這些擴充功能發布更新，
+# 而且擴充功能 ID 是由它決定的，換掉等於換一個新的擴充功能。
+# 務必自行離線備份，但永遠不要進版控。
+*.pem
+*.key
+*.p12
+*.pfx
+
+# 打包產物
+dist/
+*.zip
+*.crx
+
+# 環境變數與各種金鑰檔
+.env
+.env.*
+*.local
+secrets.json
+credentials.json
+
+# 相依套件
+node_modules/
+
+# 工具與編輯器
+.kilo/
+.kiro/
+.vscode/
+.idea/
+
+# 暫存
+_tmp*
+*.log
+
+# 作業系統
+Thumbs.db
+desktop.ini
+.DS_Store

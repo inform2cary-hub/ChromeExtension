@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Web Page to PDF — background task</title>
+</head>
+<body>
+  <!--
+    service worker 無法使用 URL.createObjectURL，
+    因此把 base64 轉成 Blob 與下載的動作放在這個離螢幕文件裡執行。
+  -->
+  <script src="../lib/constants.js"></script>
+  <script src="offscreen.js"></script>
+</body>
+</html>

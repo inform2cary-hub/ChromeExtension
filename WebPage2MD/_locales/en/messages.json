@@ -1,0 +1,22 @@
+{
+  "extName": {
+    "message": "Web Page to Markdown — Clean Article Capture",
+    "description": "Extension name shown in Chrome and on the Chrome Web Store."
+  },
+  "extDescription": {
+    "message": "Capture any web page as clean Markdown. Main content only, YAML front matter, smart link and image handling. Save or copy.",
+    "description": "Extension description shown in Chrome and on the Chrome Web Store (132 characters max)."
+  },
+  "actionTitle": {
+    "message": "Web Page to Markdown",
+    "description": "Tooltip on the toolbar button."
+  },
+  "commandSaveMarkdown": {
+    "message": "Save the current page as a Markdown file",
+    "description": "Description of the Alt+M keyboard shortcut."
+  },
+  "commandCopyMarkdown": {
+    "message": "Copy the current page as Markdown to the clipboard",
+    "description": "Description of the Alt+Shift+M keyboard shortcut."
+  }
+}

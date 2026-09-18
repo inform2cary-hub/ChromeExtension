@@ -1,0 +1,18 @@
+{
+  "extName": {
+    "message": "Web Page to PDF — Selectable, Searchable Text",
+    "description": "Extension name shown in Chrome and on the Chrome Web Store."
+  },
+  "extDescription": {
+    "message": "Save any web page as a real PDF with selectable, searchable text. Paper size, margins, headers, footers and bookmarks.",
+    "description": "Extension description shown in Chrome and on the Chrome Web Store (132 characters max)."
+  },
+  "actionTitle": {
+    "message": "Web Page to PDF",
+    "description": "Tooltip on the toolbar button."
+  },
+  "commandExportPdf": {
+    "message": "Convert the current page to PDF",
+    "description": "Description of the Alt+P keyboard shortcut."
+  }
+}

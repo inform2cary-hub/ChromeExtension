@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title data-i18n="app.name">Web Page to Markdown</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header class="head">
+    <div class="brand">
+      <span class="logo" aria-hidden="true">M↓</span>
+      <div>
+        <div class="title" data-i18n="app.name">Web Page to Markdown</div>
+        <div class="sub" id="pageLine" data-i18n="popup.loading">Loading…</div>
+      </div>
+    </div>
+    <button type="button" class="icon-btn" id="btnOptions"
+            data-i18n-title="popup.openSettings" data-i18n-aria="popup.openSettings"
+            title="Open settings" aria-label="Open settings">⚙</button>
+  </header>
+
+  <button type="button" class="primary" id="btnSave" data-i18n="popup.save" disabled>Save as .md</button>
+  <div class="dual">
+    <button type="button" class="secondary" id="btnCopy" data-i18n="popup.copy" disabled>Copy</button>
+    <button type="button" class="secondary" id="btnPreview" data-i18n="popup.preview" disabled>Preview</button>
+  </div>
+  <p class="status" id="status" role="status" aria-live="polite" data-i18n="popup.ready">Ready</p>
+
+  <div class="rows">
+    <label class="row">
+      <span data-i18n="popup.links">Links</span>
+      <select id="linkStyle"></select>
+    </label>
+    <label class="row">
+      <span data-i18n="popup.images">Images</span>
+      <select id="imageMode"></select>
+    </label>
+    <label class="row">
+      <span data-i18n="popup.frontMatter">Front matter</span>
+      <select id="frontMatter"></select>
+    </label>
+  </div>
+
+  <div class="checks">
+    <label><input type="checkbox" id="mainContentOnly"><span data-i18n="popup.mainContentOnly">Main content only</span></label>
+    <label><input type="checkbox" id="stripJunk"><span data-i18n="popup.stripJunk">Remove navigation and sidebars</span></label>
+    <label><input type="checkbox" id="preferSelection"><span data-i18n="popup.preferSelection">Convert the selection when there is one</span></label>
+    <label><input type="checkbox" id="includeTitle"><span data-i18n="popup.includeTitle">Add the page title at the top</span></label>
+    <label><input type="checkbox" id="gfmTables"><span data-i18n="popup.gfmTables">Convert tables</span></label>
+    <label><input type="checkbox" id="saveAs"><span data-i18n="popup.saveAs">Ask where to save every time</span></label>
+  </div>
+
+  <p class="filename" id="filenamePreview"></p>
+  <p class="hint" data-i18n="popup.previewHint">Preview opens the Markdown source in a new tab, so you can check it before saving.</p>
+
+  <footer class="foot">
+    <span><span data-i18n="popup.shortcutSave">Save</span> <kbd>Alt</kbd>+<kbd>M</kbd>&nbsp;&nbsp;<span data-i18n="popup.shortcutCopy">Copy</span> <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd></span>
+    <a href="#" id="linkOptions" data-i18n="popup.allSettings">All settings</a>
+  </footer>
+
+  <script src="../lib/constants.js"></script>
+  <script src="../lib/i18n.js"></script>
+  <script src="../lib/settings.js"></script>
+  <script src="../lib/markdown.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

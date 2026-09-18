@@ -1,0 +1,18 @@
+{
+  "extName": {
+    "message": "AI Bilingual Translate — Bring Your Own API Key",
+    "description": "Extension name shown in Chrome and on the Chrome Web Store."
+  },
+  "extDescription": {
+    "message": "Bilingual AI page translation using your own Gemini, OpenAI or local model. Natural phrasing, original text kept in place.",
+    "description": "Extension description shown in Chrome and on the Chrome Web Store (132 characters max)."
+  },
+  "actionTitle": {
+    "message": "AI Bilingual Translate",
+    "description": "Tooltip on the toolbar button."
+  },
+  "commandToggleTranslate": {
+    "message": "Turn bilingual translation on or off for this page",
+    "description": "Description of the Alt+T keyboard shortcut."
+  }
+}

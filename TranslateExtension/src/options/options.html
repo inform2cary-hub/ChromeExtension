@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title data-i18n="app.optionsTitle">AI Bilingual Translate — Settings</title>
+  <link rel="stylesheet" href="../content/content.css">
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="page-head">
+    <div class="brand">
+      <span class="logo" aria-hidden="true" data-i18n="app.logo">AI</span>
+      <div>
+        <h1><span data-i18n="app.name">AI Bilingual Translate</span> <span class="ver" id="version"></span></h1>
+        <p class="lead" data-i18n="options.lead">Pick an AI service, paste in an API key, and any page becomes a bilingual read — rewritten to sound natural, not translated word for word.</p>
+      </div>
+    </div>
+    <div class="head-side">
+      <div class="lang-box">
+        <label class="lang-label" for="langSelect">
+          <span class="globe" aria-hidden="true">🌐</span>
+          <span data-i18n="options.language">Interface language</span>
+        </label>
+        <select id="langSelect"></select>
+        <span class="lang-hint" data-i18n="options.languageHint">Sets the language of this extension’s own buttons and messages. What web pages get translated into is the “Target language” setting below.</span>
+      </div>
+      <span class="saved" id="savedTag" data-i18n="options.saved" hidden>Saved</span>
+    </div>
+  </header>
+
+  <section class="card">
+    <h2 data-i18n="options.sec1">1. AI service</h2>
+    <div class="providers" id="providerList" role="radiogroup"
+         data-i18n-aria="options.providerAria" aria-label="AI service"></div>
+
+    <div class="grid">
+      <label class="field">
+        <span class="label" data-i18n="options.apiKey">API key</span>
+        <span class="input-inline">
+          <input type="password" id="apiKey" autocomplete="off" spellcheck="false"
+                 data-i18n-ph="options.apiKeyPh" placeholder="Paste your API key">
+          <button type="button" class="mini" id="btnShowKey"
+                  data-i18n-aria="options.showKeyAria" aria-label="Show or hide the API key"
+                  data-i18n="options.show">Show</button>
+        </span>
+        <span class="hint" id="keyHint"></span>
+      </label>
+
+      <label class="field">
+        <span class="label" data-i18n="options.baseUrl">Base URL</span>
+        <input type="text" id="baseUrl" spellcheck="false" placeholder="https://api.example.com/v1">
+        <span class="hint" id="baseHint"></span>
+      </label>
+
+      <label class="field">
+        <span class="label" data-i18n="options.model">Model</span>
+        <span class="input-inline">
+          <input type="text" id="model" list="modelList" spellcheck="false"
+                 data-i18n-ph="options.modelPh" placeholder="Model name">
+          <button type="button" class="mini" id="btnFetchModels" data-i18n="options.fetchModels">Fetch list</button>
+        </span>
+        <datalist id="modelList"></datalist>
+        <span class="hint" id="modelHint"></span>
+      </label>
+    </div>
+
+    <div class="field wide headers-field">
+      <span class="label" data-i18n="options.headers">Headers (optional)</span>
+      <div class="headers-list" id="headersList"></div>
+      <button type="button" class="mini add-header" id="btnAddHeader" data-i18n="options.addHeader">+ Add header</button>
+      <span class="hint" data-i18n="options.headersHint">Some services — a company OpenWebUI gateway, for instance — need an extra HTTP header before they will serve a model, such as <code>X-OpenWebUI-User-Email</code>.</span>
+    </div>
+
+    <div class="actions">
+      <button type="button" class="btn" id="btnTest" data-i18n="options.test">Test the connection and translate a sample</button>
+      <button type="button" class="btn ghost" id="btnGrant" data-i18n="options.grant" hidden>Grant access to this domain</button>
+    </div>
+    <pre class="result" id="testResult" hidden></pre>
+  </section>
+
+  <section class="card">
+    <h2 data-i18n="options.sec2">2. Translation quality</h2>
+    <div class="grid">
+      <label class="field">
+        <span class="label" data-i18n="options.targetLang">Target language</span>
+        <select id="targetLang"></select>
+      </label>
+      <label class="field">
+        <span class="label" data-i18n="options.tone">Tone</span>
+        <select id="tone"></select>
+        <span class="hint" data-i18n="options.toneHint">Steers the rewriting: technical keeps terminology consistent, casual reads more relaxed.</span>
+      </label>
+      <label class="field wide">
+        <span class="label" data-i18n="options.domainHint">Subject hint (optional)</span>
+        <input type="text" id="domainHint" data-i18n-ph="options.domainHintPh"
+               placeholder="e.g. LLM inference and GPU hardware, financial reports, medical papers">
+        <span class="hint" data-i18n="options.domainHintHint">Tell the model what the site is about and the terminology comes out sharper.</span>
+      </label>
+      <label class="field check">
+        <input type="checkbox" id="skipSameLanguage">
+        <span data-i18n="options.skipSameLanguage">Skip blocks already in the target language</span>
+      </label>
+      <label class="field">
+        <span class="label" data-i18n="options.minChars">Minimum length to translate</span>
+        <input type="number" id="minChars" min="1" max="40" step="1">
+        <span class="hint" data-i18n="options.minCharsHint">Fragments shorter than this (menu labels, for example) are left alone.</span>
+      </label>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2 data-i18n="options.sec3">3. Appearance</h2>
+    <div class="grid">
+      <label class="field">
+        <span class="label" data-i18n="options.style">Display style</span>
+        <select id="style"></select>
+      </label>
+      <label class="field">
+        <span class="label" data-i18n="options.color">Translation colour</span>
+        <span class="input-inline">
+          <input type="color" id="color">
+          <input type="text" id="colorText" spellcheck="false" class="color-text">
+        </span>
+      </label>
+      <label class="field">
+        <span class="label"><span data-i18n="options.fontScale">Translation text size:</span> <output id="fontScaleOut"></output></span>
+        <input type="range" id="fontScale" min="0.7" max="1.4" step="0.02">
+      </label>
+      <label class="field check">
+        <input type="checkbox" id="cjkFont">
+        <span data-i18n="options.cjkFont">Use a Chinese font for translations (handy when the site font handles Chinese badly)</span>
+      </label>
+    </div>
+
+    <div class="preview">
+      <p class="preview-src">Recently I deployed Kimi K3 on 32 H100 GPUs for my company, but almost nobody has a cluster. But it is a Mixture of Experts, so only 16 of its 896 experts per layer fire for any given token and the rest sit asleep on disk.<span class="ait-tr" data-ait="tr" data-ait-style="dashed-underline" id="previewTr"><span class="ait-tr-inner" data-i18n="options.previewTr"></span></span></p>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2 data-i18n="options.sec4">4. Performance and model parameters</h2>
+    <div class="grid">
+      <label class="field check">
+        <input type="checkbox" id="lazyTranslate">
+        <span data-i18n="options.lazyTranslate">Only translate what you scroll to (saves tokens; recommended)</span>
+      </label>
+      <label class="field">
+        <span class="label" data-i18n="options.batchChars">Characters per batch</span>
+        <input type="number" id="batchChars" min="200" max="8000" step="100">
+        <span class="hint" data-i18n="options.batchCharsHint">Too large and the model truncates its answer; too small and the request count climbs.</span>
+      </label>
+      <label class="field">
+        <span class="label" data-i18n="options.batchMaxItems">Blocks per batch</span>
+        <input type="number" id="batchMaxItems" min="1" max="40" step="1">
+      </label>
+      <label class="field">
+        <span class="label" data-i18n="options.concurrency">Parallel requests</span>
+        <input type="number" id="concurrency" min="1" max="8" step="1">
+      </label>
+      <label class="field">
+        <span class="label" data-i18n="options.timeoutSec">Timeout (seconds)</span>
+        <input type="number" id="timeoutSec" min="10" max="600" step="5">
+        <span class="hint" data-i18n="options.timeoutSecHint">Raise this for slower local models.</span>
+      </label>
+      <label class="field check">
+        <input type="checkbox" id="disableThinking">
+        <span data-i18n="options.disableThinking">Turn off thinking mode (local / custom endpoints): sends <code>chat_template_kwargs.enable_thinking=false</code>. Leave it on for a reasoning model and a single batch can take minutes and time out.</span>
+      </label>
+      <label class="field">
+        <span class="label" data-i18n="options.thinkingLevel">Gemini thinking level</span>
+        <select id="thinkingLevel"></select>
+        <span class="hint" data-i18n="options.thinkingLevelHint">Translation needs no deep reasoning; low or minimal is fastest.</span>
+      </label>
+      <label class="field">
+        <span class="label" data-i18n="options.reasoningEffort">OpenAI reasoning_effort</span>
+        <select id="reasoningEffort"></select>
+        <span class="hint" data-i18n="options.reasoningEffortHint">Dropped automatically when the model does not support it.</span>
+      </label>
+      <label class="field">
+        <span class="label" data-i18n="options.temperature">temperature</span>
+        <input type="text" id="temperature" data-i18n-ph="options.temperaturePh"
+               placeholder="Blank = the model’s own default" spellcheck="false">
+        <span class="hint" data-i18n="options.temperatureHint">Best left blank for the Gemini 3 and GPT-5 families.</span>
+      </label>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2 data-i18n="options.sec5">5. Automatic translation and exclusions</h2>
+    <div class="grid">
+      <label class="field check">
+        <input type="checkbox" id="autoTranslate">
+        <span data-i18n="options.autoTranslate">Translate every site automatically (keeps spending API quota — turn on with care)</span>
+      </label>
+      <label class="field wide">
+        <span class="label" data-i18n="options.autoTranslateHosts">Domains to translate automatically (one per line)</span>
+        <textarea id="autoTranslateHosts" rows="3" spellcheck="false" placeholder="news.ycombinator.com"></textarea>
+      </label>
+      <label class="field wide">
+        <span class="label" data-i18n="options.excludeHosts">Domains never to translate (one per line)</span>
+        <textarea id="excludeHosts" rows="3" spellcheck="false" placeholder="mail.google.com"></textarea>
+      </label>
+      <label class="field wide">
+        <span class="label" data-i18n="options.skipSelectors">CSS selectors to skip</span>
+        <input type="text" id="skipSelectors" spellcheck="false" placeholder=".highlight, .code-block, nav">
+        <span class="hint" data-i18n="options.skipSelectorsHint">Blocks matching these selectors are left untranslated (code blocks are skipped already).</span>
+      </label>
+    </div>
+  </section>
+
+  <footer class="page-foot">
+    <div class="stats" id="stats"></div>
+    <div class="actions">
+      <button type="button" class="btn ghost danger" id="btnReset" data-i18n="options.reset">Restore defaults</button>
+    </div>
+  </footer>
+</div>
+
+<script src="../lib/constants.js"></script>
+<script src="../lib/i18n.js"></script>
+<script src="../lib/settings.js"></script>
+<script src="../content/render.js"></script>
+<script src="options.js"></script>
+</body>
+</html>

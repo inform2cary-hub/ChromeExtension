@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title data-i18n="app.optionsTitle">Web Page to Markdown — Settings</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="page-head">
+    <div class="brand">
+      <span class="logo" aria-hidden="true">M↓</span>
+      <div>
+        <h1><span data-i18n="app.name">Web Page to Markdown</span> <span class="ver" id="version"></span></h1>
+        <p class="lead" data-i18n="options.lead">Everyday options live in the toolbar popup. This page holds the full capture rules, Markdown style and output settings.</p>
+      </div>
+    </div>
+    <div class="head-side">
+      <div class="lang-box">
+        <label class="lang-label" for="langSelect">
+          <span class="globe" aria-hidden="true">🌐</span>
+          <span data-i18n="options.language">Language</span>
+        </label>
+        <select id="langSelect"></select>
+        <span class="lang-hint" data-i18n="options.languageHint">Applies to this extension’s interface only.</span>
+      </div>
+      <span class="saved" id="savedTag" data-i18n="options.saved" hidden>Saved</span>
+    </div>
+  </header>
+
+  <section class="card">
+    <h2 data-i18n="options.sec1">1. Content capture</h2>
+    <div class="grid">
+      <label class="field check">
+        <input type="checkbox" id="mainContentOnly">
+        <span data-i18n="options.mainContentOnly">Main content only (find the article block and drop navigation, sidebars and footers; falls back to the whole page when the call is not clear)</span>
+      </label>
+      <label class="field check">
+        <input type="checkbox" id="stripJunk">
+        <span data-i18n="options.stripJunk">Also remove share, recommendation and cookie-notice blocks (anything holding more than a third of the text is kept, so body copy is never cut)</span>
+      </label>
+      <label class="field check">
+        <input type="checkbox" id="preferSelection">
+        <span data-i18n="options.preferSelection">When text is selected on the page, convert only the selection</span>
+      </label>
+      <label class="field check">
+        <input type="checkbox" id="includeTitle">
+        <span data-i18n="options.includeTitle">Add the page title as an H1 at the top (skipped when the content already starts with the same heading)</span>
+      </label>
+      <label class="field wide">
+        <span class="label" data-i18n="options.removeSelectors">Extra CSS selectors to remove</span>
+        <textarea id="removeSelectors" rows="3" spellcheck="false" placeholder=".cookie-banner, #newsletter-popup, .ad-slot"></textarea>
+        <span class="hint" data-i18n="options.removeSelectorsHint">One per line, or comma separated. Invalid selectors are ignored and never break the conversion.</span>
+      </label>
+      <label class="field check">
+        <input type="checkbox" id="expandLazyContent">
+        <span data-i18n="options.expandLazy">Scroll the whole page first to trigger lazy loading (only needed when image URLs come back empty; adds a few seconds)</span>
+      </label>
+      <label class="field">
+        <span class="label" data-i18n="options.settleMs">Extra wait before capture (ms)</span>
+        <input type="number" id="settleMs" min="0" max="5000" step="100">
+        <span class="hint" data-i18n="options.settleMsHint">Raise this when the page fills in its content after loading. 0 is usually enough.</span>
+      </label>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2 data-i18n="options.sec2">2. Markdown style</h2>
+    <div class="grid">
+      <label class="field">
+        <span class="label" data-i18n="options.headingStyle">Headings</span>
+        <select id="headingStyle"></select>
+      </label>
+      <label class="field">
+        <span class="label" data-i18n="options.bulletMarker">List marker</span>
+        <select id="bulletMarker"></select>
+      </label>
+      <label class="field">
+        <span class="label" data-i18n="options.strongMarker">Bold</span>
+        <select id="strongMarker"></select>
+      </label>
+      <label class="field">
+        <span class="label" data-i18n="options.emphasisMarker">Italic</span>
+        <select id="emphasisMarker"></select>
+      </label>
+      <label class="field">
+        <span class="label" data-i18n="options.codeFence">Code fence</span>
+        <select id="codeFence"></select>
+      </label>
+      <label class="field">
+        <span class="label" data-i18n="options.hrStyle">Horizontal rule</span>
+        <select id="hrStyle"></select>
+      </label>
+      <label class="field check half">
+        <input type="checkbox" id="gfmTables">
+        <span data-i18n="options.gfmTables">Convert tables (GFM table syntax)</span>
+      </label>
+      <label class="field check half">
+        <input type="checkbox" id="taskLists">
+        <span data-i18n="options.taskLists">Convert task lists (<code>- [x]</code>)</span>
+      </label>
+      <label class="field check half">
+        <input type="checkbox" id="strikethrough">
+        <span data-i18n="options.strikethrough">Turn strikethrough into <code>~~text~~</code></span>
+      </label>
+      <label class="field check half">
+        <input type="checkbox" id="highlightMarker">
+        <span data-i18n="options.highlightMarker">Turn highlights into <code>==text==</code> (Obsidian syntax)</span>
+      </label>
+      <label class="field check half">
+        <input type="checkbox" id="keepLineBreaks">
+        <span data-i18n="options.keepLineBreaks">Keep line breaks inside paragraphs (<code>&lt;br&gt;</code> becomes two trailing spaces)</span>
+      </label>
+      <label class="field check half">
+        <input type="checkbox" id="codeLanguageFromClass">
+        <span data-i18n="options.codeLanguageFromClass">Guess the code language from the class name</span>
+      </label>
+      <label class="field check">
+        <input type="checkbox" id="mathAsTex">
+        <span data-i18n="options.mathAsTex">Restore maths (MathML / KaTeX) as <code>$LaTeX$</code></span>
+      </label>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2 data-i18n="options.sec3">3. Links and images</h2>
+    <div class="grid">
+      <label class="field">
+        <span class="label" data-i18n="options.linkStyle">Link handling</span>
+        <select id="linkStyle"></select>
+      </label>
+      <label class="field">
+        <span class="label" data-i18n="options.imageMode">Image handling</span>
+        <select id="imageMode"></select>
+      </label>
+      <label class="field check">
+        <input type="checkbox" id="absoluteUrls">
+        <span data-i18n="options.absoluteUrls">Expand relative URLs into absolute ones (recommended, or the links break once you leave the site)</span>
+      </label>
+      <label class="field check">
+        <input type="checkbox" id="keepFragmentLinks">
+        <span data-i18n="options.keepFragmentLinks">Keep links that only point inside the page (<code>#section</code>)</span>
+      </label>
+      <label class="field check">
+        <input type="checkbox" id="skipDataUrlImages">
+        <span data-i18n="options.skipDataUrlImages">Skip inline (<code>data:</code>) images and keep only the alt text (stops base64 bloating the file)</span>
+      </label>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2 data-i18n="options.sec4">4. Front matter</h2>
+    <div class="grid">
+      <label class="field">
+        <span class="label" data-i18n="options.fmFormat">Format</span>
+        <select id="frontMatter"></select>
+      </label>
+      <label class="field check half">
+        <input type="checkbox" id="fmTitle">
+        <span data-i18n="options.fmTitle"><code>title</code> title</span>
+      </label>
+      <label class="field check half">
+        <input type="checkbox" id="fmSource">
+        <span data-i18n="options.fmSource"><code>source</code> original URL</span>
+      </label>
+      <label class="field check half">
+        <input type="checkbox" id="fmAuthor">
+        <span data-i18n="options.fmAuthor"><code>author</code> author</span>
+      </label>
+      <label class="field check half">
+        <input type="checkbox" id="fmPublished">
+        <span data-i18n="options.fmPublished"><code>published</code> published time</span>
+      </label>
+      <label class="field check half">
+        <input type="checkbox" id="fmSiteName">
+        <span data-i18n="options.fmSiteName"><code>site</code> site name</span>
+      </label>
+      <label class="field check half">
+        <input type="checkbox" id="fmCaptured">
+        <span data-i18n="options.fmCaptured"><code>captured</code> capture time</span>
+      </label>
+      <label class="field check half">
+        <input type="checkbox" id="fmDescription">
+        <span data-i18n="options.fmDescription"><code>description</code> summary</span>
+      </label>
+      <label class="field check half">
+        <input type="checkbox" id="fmLang">
+        <span data-i18n="options.fmLang"><code>lang</code> language</span>
+      </label>
+      <label class="field check half">
+        <input type="checkbox" id="fmTags">
+        <span data-i18n="options.fmTags"><code>tags</code> tags (taken from the page’s keywords / article:tag)</span>
+      </label>
+      <label class="field wide">
+        <span class="label" data-i18n="options.fmExtra">Custom fields (one per line, written as raw YAML)</span>
+        <textarea id="frontMatterExtra" rows="3" spellcheck="false" placeholder="type: clipping&#10;status: inbox"></textarea>
+        <span class="hint" data-i18n="options.fmExtraHint">Appended as-is after the automatic fields. The syntax is not checked.</span>
+      </label>
+      <div class="field wide">
+        <span class="label" data-i18n="options.fmPreview">Preview</span>
+        <pre class="result" id="frontMatterPreview"></pre>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2 data-i18n="options.sec5">5. Filename and location</h2>
+    <div class="grid">
+      <label class="field wide">
+        <span class="label" data-i18n="options.filenameTemplate">Filename template</span>
+        <input type="text" id="filenameTemplate" spellcheck="false" placeholder="{title}">
+        <span class="hint">
+          <span data-i18n="options.filenameFields">Available fields:</span>
+          <code>{title}</code> <code>{host}</code> <code>{domain}</code> <code>{path}</code>
+          <code>{date}</code> <code>{time}</code> <code>{datetime}</code>
+          <code>{yyyy}</code> <code>{month}</code> <code>{day}</code>
+          <code>{hour}</code> <code>{minute}</code> <code>{second}</code>
+        </span>
+      </label>
+      <label class="field">
+        <span class="label" data-i18n="options.subfolder">Download subfolder (optional)</span>
+        <input type="text" id="subfolder" spellcheck="false" data-i18n-ph="options.subfolderPh" placeholder="e.g. Clippings">
+        <span class="hint" data-i18n="options.subfolderHint">Relative to the browser’s download folder. Leave blank to save directly there.</span>
+      </label>
+      <label class="field check">
+        <input type="checkbox" id="saveAs">
+        <span data-i18n="options.saveAs">Always open the “Save as” dialog</span>
+      </label>
+      <div class="field wide">
+        <span class="label" data-i18n="options.filenamePreview">Filename preview</span>
+        <pre class="result" id="filenamePreview"></pre>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2 data-i18n="options.sec6">6. How it works</h2>
+    <ul class="notes">
+      <li data-i18n="options.note1">Capture only reads the page and never changes what you are browsing: every clean-up step runs on a copy of the node tree.</li>
+      <li data-i18n="options.note2">“Main content only” weighs candidate blocks by text volume and link density. When the winner holds less than 35% of the page text it gives up, converts the whole page instead, and says so in the result message.</li>
+      <li data-i18n="options.note3">Chrome’s built-in pages (<code>chrome://</code>), extension pages and the Chrome Web Store cannot be captured. That is a browser restriction.</li>
+      <li data-i18n="options.note4">Copying writes to the clipboard through an offscreen document, which is why the extension needs the “clipboardWrite” permission.</li>
+      <li data-i18n="options.note5">The preview page is editable, so you can fix the few paragraphs that converted badly before saving.</li>
+    </ul>
+  </section>
+
+  <footer class="page-foot">
+    <span class="hint" data-i18n="options.autosave">Settings save automatically.</span>
+    <button type="button" class="btn ghost danger" id="btnReset" data-i18n="options.reset">Restore defaults</button>
+  </footer>
+</div>
+
+<script src="../lib/constants.js"></script>
+<script src="../lib/i18n.js"></script>
+<script src="../lib/settings.js"></script>
+<script src="../lib/markdown.js"></script>
+<script src="options.js"></script>
+</body>
+</html>

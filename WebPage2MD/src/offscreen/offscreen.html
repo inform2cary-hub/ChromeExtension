@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Web Page to Markdown — background task</title>
+</head>
+<body>
+  <!--
+    service worker 沒有 URL.createObjectURL，也不能寫入剪貼簿，
+    所以把「建 Blob URL」與「複製到剪貼簿」兩件事放在這個離螢幕文件裡執行。
+    textarea 是 document.execCommand('copy') 需要的複製來源。
+  -->
+  <textarea id="sink" aria-hidden="true"></textarea>
+  <script src="../lib/constants.js"></script>
+  <script src="offscreen.js"></script>
+</body>
+</html>

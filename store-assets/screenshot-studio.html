@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>上架截圖工具 / Store Screenshot Studio</title>
+<style>
+  :root {
+    --bg: #eef1f4;
+    --card: #ffffff;
+    --fg: #1f2933;
+    --muted: #64798a;
+    --line: #dbe3ea;
+    --accent: #2a6f97;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #141b23;
+      --card: #1d2630;
+      --fg: #eef3f7;
+      --muted: #9fb2c2;
+      --line: #2f3d4a;
+    }
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font: 14px/1.6 -apple-system, "Segoe UI", "Microsoft JhengHei", sans-serif;
+  }
+
+  .wrap {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 24px 20px 48px;
+  }
+
+  h1 { margin: 0 0 2px; font-size: 20px; }
+
+  .lead { margin: 0 0 20px; color: var(--muted); font-size: 13px; }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 20px;
+    align-items: start;
+  }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+  }
+
+  .panel {
+    padding: 16px 18px 18px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--card);
+  }
+
+  .panel h2 {
+    margin: 0 0 12px;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+  }
+
+  .field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 13px; }
+
+  .field > span { font-size: 12.5px; color: var(--muted); }
+
+  input[type="text"], select, textarea {
+    width: 100%;
+    min-height: 34px;
+    padding: 6px 9px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--card);
+    color: var(--fg);
+    font: inherit;
+  }
+
+  textarea { resize: vertical; line-height: 1.5; }
+
+  input[type="range"] { width: 100%; }
+
+  .row { display: flex; gap: 8px; }
+  .row > * { flex: 1; min-width: 0; }
+
+  .check { flex-direction: row; align-items: center; gap: 8px; }
+  .check input { margin: 0; }
+  .check span { color: var(--fg); font-size: 13px; }
+
+  .btn {
+    padding: 9px 14px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--card);
+    color: var(--fg);
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .btn:hover { border-color: var(--accent); }
+
+  .btn.primary {
+    border-color: transparent;
+    background: var(--accent);
+    color: #fff;
+    font-weight: 600;
+  }
+
+  .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  .drop {
+    display: grid;
+    place-items: center;
+    min-height: 120px;
+    margin-bottom: 13px;
+    padding: 16px;
+    border: 2px dashed var(--line);
+    border-radius: 10px;
+    color: var(--muted);
+    font-size: 13px;
+    text-align: center;
+    cursor: pointer;
+  }
+
+  .drop.over { border-color: var(--accent); color: var(--accent); }
+
+  .stage {
+    padding: 14px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--card);
+  }
+
+  .stage canvas {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 6px;
+    background: #fff;
+  }
+
+  .bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 13px;
+    flex-wrap: wrap;
+  }
+
+  .size {
+    margin-right: auto;
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  .warn { color: #c0392b; }
+
+  .hint { margin: 10px 0 0; color: var(--muted); font-size: 11.5px; line-height: 1.6; }
+
+  kbd {
+    padding: 1px 5px;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    font-family: ui-monospace, Consolas, monospace;
+    font-size: 11px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>上架截圖工具 · Store Screenshot Studio</h1>
+  <p class="lead">
+    把原始截圖排成 Chrome 線上應用程式商店要求的 1280 × 800 PNG。全部在瀏覽器內完成，圖片不會上傳到任何地方。
+  </p>
+
+  <div class="layout">
+    <div class="panel">
+      <h2>來源</h2>
+
+      <div class="drop" id="drop">
+        拖進截圖、點這裡選檔，<br>或直接按 <kbd>Ctrl</kbd>+<kbd>V</kbd> 貼上
+      </div>
+      <input type="file" id="file" accept="image/*" hidden>
+
+      <h2>版面</h2>
+
+      <label class="field">
+        <span>擴充功能（決定配色）</span>
+        <select id="preset"></select>
+      </label>
+
+      <label class="field">
+        <span>標題（留空就不顯示文字）</span>
+        <input type="text" id="title" placeholder="One click, clean Markdown">
+      </label>
+
+      <label class="field">
+        <span>副標</span>
+        <input type="text" id="subtitle" placeholder="Works on any page">
+      </label>
+
+      <label class="field">
+        <span>縮放 <b id="scaleOut">100%</b></span>
+        <input type="range" id="scale" min="40" max="160" step="1" value="100">
+      </label>
+
+      <label class="field">
+        <span>垂直位置 <b id="offsetOut">0</b></span>
+        <input type="range" id="offset" min="-200" max="200" step="1" value="0">
+      </label>
+
+      <label class="field check">
+        <input type="checkbox" id="shadow" checked>
+        <span>加上陰影與圓角</span>
+      </label>
+
+      <label class="field check">
+        <input type="checkbox" id="gradient" checked>
+        <span>漸層背景</span>
+      </label>
+    </div>
+
+    <div>
+      <div class="stage">
+        <canvas id="canvas" width="1280" height="800"></canvas>
+      </div>
+
+      <div class="bar">
+        <span class="size" id="sizeNote">還沒有選圖片</span>
+        <button type="button" class="btn" id="btnReset">重設版面</button>
+        <button type="button" class="btn primary" id="btnSave" disabled>下載 1280 × 800 PNG</button>
+      </div>
+
+      <p class="hint">
+        商店規定截圖必須呈現實際功能，不能是純行銷拼貼或示意圖。建議先在實際網頁上開啟彈出視窗或設定頁截圖，
+        再用這個工具排版。每個擴充功能準備 4–5 張，第一張會成為商店列表的主圖。
+      </p>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+const PRESETS = [
+  { id: 'w2p', name: 'Web Page to PDF', brand: '#c0392b', tint: '#f6e7e4' },
+  { id: 'w2md', name: 'Web Page to Markdown', brand: '#0f766e', tint: '#e2f1ef' },
+  { id: 'trans', name: 'AI Bilingual Translate', brand: '#2a6f97', tint: '#e4eef5' }
+];
+
+const W = 1280;
+const H = 800;
+
+const $ = (id) => document.getElementById(id);
+const canvas = $('canvas');
+const ctx = canvas.getContext('2d');
+
+let image = null;
+
+function currentPreset() {
+  return PRESETS.find((p) => p.id === $('preset').value) || PRESETS[0];
+}
+
+function roundedPath(x, y, w, h, r) {
+  ctx.beginPath();
+  if (ctx.roundRect) ctx.roundRect(x, y, w, h, r);
+  else ctx.rect(x, y, w, h);
+}
+
+function drawBackground(preset) {
+  if ($('gradient').checked) {
+    const grad = ctx.createLinearGradient(0, 0, W, H);
+    grad.addColorStop(0, preset.tint);
+    grad.addColorStop(1, '#ffffff');
+    ctx.fillStyle = grad;
+  } else {
+    ctx.fillStyle = '#ffffff';
+  }
+  ctx.fillRect(0, 0, W, H);
+
+  // 左上角一道品牌色，讓多張截圖放在一起時有一致的識別
+  ctx.fillStyle = preset.brand;
+  ctx.fillRect(0, 0, W, 6);
+}
+
+function drawText(preset) {
+  const title = $('title').value.trim();
+  const subtitle = $('subtitle').value.trim();
+  if (!title && !subtitle) return 0;
+
+  let y = 74;
+  if (title) {
+    ctx.fillStyle = '#16212b';
+    ctx.font = '600 38px -apple-system, "Segoe UI", "Microsoft JhengHei", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(title, W / 2, y, W - 120);
+    y += 46;
+  }
+  if (subtitle) {
+    ctx.fillStyle = '#5b6b7a';
+    ctx.font = '400 21px -apple-system, "Segoe UI", "Microsoft JhengHei", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(subtitle, W / 2, y, W - 160);
+    y += 30;
+  }
+  return y + 14;
+}
+
+function render() {
+  const preset = currentPreset();
+  ctx.clearRect(0, 0, W, H);
+  drawBackground(preset);
+  const textBottom = drawText(preset);
+
+  if (!image) {
+    ctx.fillStyle = '#9aa9b6';
+    ctx.font = '400 19px -apple-system, "Segoe UI", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('把截圖拖進左邊的區塊', W / 2, H / 2);
+    return;
+  }
+
+  const top = textBottom || 56;
+  const boxW = W - 128;
+  const boxH = H - top - 56;
+  const fit = Math.min(boxW / image.width, boxH / image.height);
+  const scale = fit * (Number($('scale').value) / 100);
+
+  const w = image.width * scale;
+  const h = image.height * scale;
+  const x = (W - w) / 2;
+  const y = top + (boxH - h) / 2 + Number($('offset').value);
+
+  ctx.save();
+  if ($('shadow').checked) {
+    ctx.shadowColor = 'rgba(19, 33, 46, 0.26)';
+    ctx.shadowBlur = 34;
+    ctx.shadowOffsetY = 14;
+    ctx.fillStyle = '#ffffff';
+    roundedPath(x, y, w, h, 14);
+    ctx.fill();
+    ctx.shadowColor = 'transparent';
+    roundedPath(x, y, w, h, 14);
+    ctx.clip();
+  }
+  ctx.drawImage(image, x, y, w, h);
+  ctx.restore();
+}
+
+function loadFile(file) {
+  if (!file || !file.type.startsWith('image/')) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    const img = new Image();
+    img.onload = () => {
+      image = img;
+      const note = $('sizeNote');
+      note.textContent = '來源 ' + img.width + ' × ' + img.height + ' px';
+      note.classList.toggle('warn', img.width < 640);
+      if (img.width < 640) note.textContent += '（偏小，放大後可能糊掉）';
+      $('btnSave').disabled = false;
+      render();
+    };
+    img.src = reader.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function save() {
+  canvas.toBlob((blob) => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = currentPreset().id + '-screenshot-1280x800.png';
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }, 'image/png');
+}
+
+(function init() {
+  for (const preset of PRESETS) {
+    const option = document.createElement('option');
+    option.value = preset.id;
+    option.textContent = preset.name;
+    $('preset').appendChild(option);
+  }
+
+  const drop = $('drop');
+  drop.addEventListener('click', () => $('file').click());
+  drop.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    drop.classList.add('over');
+  });
+  drop.addEventListener('dragleave', () => drop.classList.remove('over'));
+  drop.addEventListener('drop', (e) => {
+    e.preventDefault();
+    drop.classList.remove('over');
+    loadFile(e.dataTransfer.files[0]);
+  });
+
+  $('file').addEventListener('change', (e) => loadFile(e.target.files[0]));
+
+  window.addEventListener('paste', (e) => {
+    for (const item of e.clipboardData.items) {
+      if (item.type.startsWith('image/')) loadFile(item.getAsFile());
+    }
+  });
+
+  for (const id of ['preset', 'title', 'subtitle', 'shadow', 'gradient']) {
+    $(id).addEventListener('input', render);
+  }
+  $('scale').addEventListener('input', () => {
+    $('scaleOut').textContent = $('scale').value + '%';
+    render();
+  });
+  $('offset').addEventListener('input', () => {
+    $('offsetOut').textContent = $('offset').value;
+    render();
+  });
+
+  $('btnReset').addEventListener('click', () => {
+    $('scale').value = 100;
+    $('offset').value = 0;
+    $('scaleOut').textContent = '100%';
+    $('offsetOut').textContent = '0';
+    render();
+  });
+
+  $('btnSave').addEventListener('click', save);
+
+  render();
+})();
+</script>
+</body>
+</html>

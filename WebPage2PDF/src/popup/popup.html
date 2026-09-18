@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title data-i18n="app.name">Web Page to PDF</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header class="head">
+    <div class="brand">
+      <span class="logo" aria-hidden="true">PDF</span>
+      <div>
+        <div class="title" data-i18n="app.name">Web Page to PDF</div>
+        <div class="sub" id="pageLine" data-i18n="popup.loading">Loading…</div>
+      </div>
+    </div>
+    <button type="button" class="icon-btn" id="btnOptions"
+            data-i18n-title="popup.openSettings" data-i18n-aria="popup.openSettings"
+            title="Open settings" aria-label="Open settings">⚙</button>
+  </header>
+
+  <button type="button" class="primary" id="btnExport" data-i18n="popup.export" disabled>Convert to PDF</button>
+  <p class="status" id="status" role="status" aria-live="polite" data-i18n="popup.ready">Ready</p>
+
+  <div class="rows">
+    <label class="row">
+      <span data-i18n="popup.paper">Paper</span>
+      <select id="paper"></select>
+    </label>
+
+    <div class="row inline" id="customSizeRow" hidden>
+      <span data-i18n="popup.customMm">Custom mm</span>
+      <span class="pair">
+        <input type="number" id="customWidth" min="20" max="2000" step="1"
+               data-i18n-aria="popup.customWidth" aria-label="Custom width (mm)">
+        <span class="times">×</span>
+        <input type="number" id="customHeight" min="20" max="2000" step="1"
+               data-i18n-aria="popup.customHeight" aria-label="Custom height (mm)">
+      </span>
+    </div>
+
+    <label class="row">
+      <span data-i18n="popup.orientation">Orientation</span>
+      <select id="orientation"></select>
+    </label>
+
+    <label class="row">
+      <span data-i18n="popup.margins">Margins</span>
+      <select id="marginPreset"></select>
+    </label>
+
+    <div class="row inline" id="customMarginRow" hidden>
+      <span data-i18n="popup.marginQuad">T R B L</span>
+      <span class="quad">
+        <input type="number" id="marginTop" min="0" max="100" step="1"
+               data-i18n-aria="popup.marginTop" aria-label="Top margin (mm)">
+        <input type="number" id="marginRight" min="0" max="100" step="1"
+               data-i18n-aria="popup.marginRight" aria-label="Right margin (mm)">
+        <input type="number" id="marginBottom" min="0" max="100" step="1"
+               data-i18n-aria="popup.marginBottom" aria-label="Bottom margin (mm)">
+        <input type="number" id="marginLeft" min="0" max="100" step="1"
+               data-i18n-aria="popup.marginLeft" aria-label="Left margin (mm)">
+      </span>
+    </div>
+
+    <label class="row">
+      <span data-i18n="popup.scale">Scale %</span>
+      <input type="number" id="scale" min="10" max="200" step="5">
+    </label>
+
+    <label class="row">
+      <span data-i18n="popup.pageRanges">Page range</span>
+      <input type="text" id="pageRanges" data-i18n-ph="popup.pageRangesPh" placeholder="Blank = all, e.g. 1-5, 8">
+    </label>
+  </div>
+
+  <div class="checks">
+    <label><input type="checkbox" id="printBackground"><span data-i18n="popup.printBackground">Print backgrounds and images</span></label>
+    <label><input type="checkbox" id="headerFooter"><span data-i18n="popup.headerFooter">Add header and footer</span></label>
+    <label><input type="checkbox" id="mainContentOnly"><span data-i18n="popup.mainContentOnly">Main content only</span></label>
+    <label><input type="checkbox" id="removeFixed"><span data-i18n="popup.removeFixed">Unpin fixed / floating elements</span></label>
+    <label><input type="checkbox" id="forceLightBackground"><span data-i18n="popup.forceLight">Force black text on white</span></label>
+    <label><input type="checkbox" id="emulateScreenMedia"><span data-i18n="popup.emulateScreen">Use screen styles instead of print styles</span></label>
+    <label><input type="checkbox" id="expandLazyContent"><span data-i18n="popup.expandLazy">Scroll the page first to load images</span></label>
+    <label><input type="checkbox" id="saveAs"><span data-i18n="popup.saveAs">Ask where to save every time</span></label>
+  </div>
+
+  <p class="filename" id="filenamePreview"></p>
+
+  <details class="more">
+    <summary data-i18n="popup.moreWays">Other ways</summary>
+    <button type="button" class="secondary" id="btnPrintDialog" data-i18n="popup.printDialog">Use Chrome's print dialog instead</button>
+    <p class="hint" data-i18n="popup.printDialogHint">A fallback for pages the debugger cannot attach to. Choose “Save as PDF” yourself in the dialog.</p>
+  </details>
+
+  <footer class="foot">
+    <span><span data-i18n="popup.shortcut">Shortcut</span> <kbd>Alt</kbd>+<kbd>P</kbd></span>
+    <a href="#" id="linkOptions" data-i18n="popup.allSettings">All settings</a>
+  </footer>
+
+  <script src="../lib/constants.js"></script>
+  <script src="../lib/i18n.js"></script>
+  <script src="../lib/settings.js"></script>
+  <script src="../lib/pdf.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

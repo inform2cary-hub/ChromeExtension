@@ -1,0 +1,18 @@
+{
+  "extName": {
+    "message": "AI 雙語翻譯 — 用你自己的 API Key",
+    "description": "Extension name shown in Chrome and on the Chrome Web Store."
+  },
+  "extDescription": {
+    "message": "用你自己的 Gemini、OpenAI 或地端模型翻譯網頁，原文與譯文雙語對照。強調語意潤飾，不做逐字直譯。",
+    "description": "Extension description shown in Chrome and on the Chrome Web Store (132 characters max)."
+  },
+  "actionTitle": {
+    "message": "AI 雙語翻譯",
+    "description": "Tooltip on the toolbar button."
+  },
+  "commandToggleTranslate": {
+    "message": "切換此頁的雙語翻譯",
+    "description": "Description of the Alt+T keyboard shortcut."
+  }
+}
