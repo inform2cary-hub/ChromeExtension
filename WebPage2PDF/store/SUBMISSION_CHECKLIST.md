@@ -63,8 +63,9 @@ Asset rules that get listings rejected:
       paste the Traditional Chinese **description** from §3. Name and summary localize automatically
       from `_locales/zh_TW`.
 - [ ] **Store icon** and **screenshots** uploaded.
-- [ ] **Support / homepage URL** — `{{HOMEPAGE_URL}}` if you have one. Optional, but a listing with
-      no support link looks abandoned.
+- [ ] **Support / homepage URL** — `https://inform2cary-hub.github.io/ChromeExtension/`
+- [ ] **Privacy policy URL** —
+      `https://inform2cary-hub.github.io/ChromeExtension/privacy/web-page-to-pdf.html`
 
 ---
 

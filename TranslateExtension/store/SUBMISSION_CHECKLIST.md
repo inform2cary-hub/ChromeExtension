@@ -71,8 +71,10 @@ Asset rules, with two that are specific to this extension:
       Traditional Chinese **description** from §3. Name and summary localize automatically from
       `_locales/zh_TW`.
 - [ ] **Store icon** and **screenshots** uploaded.
-- [ ] **Support / homepage URL** — `{{HOMEPAGE_URL}}` if you have one. Strongly recommended for a
-      bring-your-own-key product: users will need somewhere to ask setup questions.
+- [ ] **Support / homepage URL** — `https://inform2cary-hub.github.io/ChromeExtension/`
+      (important for a bring-your-own-key product: users need somewhere to ask setup questions)
+- [ ] **Privacy policy URL** —
+      `https://inform2cary-hub.github.io/ChromeExtension/privacy/ai-bilingual-translate.html`
 
 ---
 
