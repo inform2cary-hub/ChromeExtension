@@ -117,9 +117,24 @@
     return false;
   }
 
+  /** 自訂元素底下有沒有區塊內容。限制深度，避免每個節點都掃整棵子樹 */
+  function wrapsBlock(el, depth) {
+    if ((depth || 0) > 6) return false;
+    for (const child of elementKids(el)) {
+      if (BLOCK_TAGS.has(tagOf(child))) return true;
+      if (wrapsBlock(child, (depth || 0) + 1)) return true;
+    }
+    return false;
+  }
+
   function isBlockish(el, ctx) {
-    if (BLOCK_TAGS.has(tagOf(el))) return true;
+    const tag = tagOf(el);
+    if (BLOCK_TAGS.has(tag)) return true;
     if (ctx.opts.mathAsTex && isMath(el) && isDisplayMath(el)) return true;
+    // 自訂元素（web component）不可能列進白名單，但只要裡面包著區塊內容就得當成區塊。
+    // 否則整段會走行內路徑，<pre> 這類結構到不了區塊處理器，程式碼會變成一坨純文字。
+    // 只放行含連字號的自訂標籤：標準的行內標籤（例如 <a> 包 <div> 的卡片連結）維持原行為。
+    if (tag.indexOf('-') >= 0 && wrapsBlock(el, 0)) return true;
     return false;
   }
 

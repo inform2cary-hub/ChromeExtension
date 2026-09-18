@@ -35,7 +35,9 @@
     'ads?', 'advert\\w*', 'banner', 'breadcrumb\\w*', 'comments?', 'cookie\\w*', 'disqus',
     'footer', 'masthead', 'newsletter', 'paywall', 'popup', 'promo\\w*', 'related',
     'share', 'sharing', 'sidebar', 'site-header', 'social', 'sponsor\\w*', 'subscribe',
-    'toolbar', 'utility-bar', 'widget'
+    'toolbar', 'utility-bar', 'widget',
+    // 程式碼區塊上方的語言標籤：內容已經寫進 ``` 的資訊字串，留著只會多一行雜訊
+    'language-name'
   ].join('|') + ')(?:[\\s_-]|$)', 'i');
 
   function sleep(ms) {
@@ -145,12 +147,56 @@
     if (el.removeAttribute) el.removeAttribute(DROP_ATTR);
   }
 
+  /** 子樹裡有沒有 shadow host。沒有的話就走原生 cloneNode，快很多 */
+  function anyShadowHost(el) {
+    if (el.shadowRoot) return true;
+    for (const node of el.querySelectorAll('*')) {
+      if (node.shadowRoot) return true;
+    }
+    return false;
+  }
+
+  /**
+   * 會展開 open shadow root 的複製。
+   *
+   * cloneNode 不會複製 shadow root，所以用 web component 包內容的網站
+   * （MDN 的程式碼區塊就是 <mdn-code-example> + shadow DOM）複製出來會是空殼，
+   * 整段內容無聲消失。closed 的 shadow root 外部本來就讀不到，只能跳過。
+   *
+   * <slot> 要換成實際被投影進去的節點：shadow 樹裡的 slot 只是佔位，
+   * 真正的內容在 light DOM，直接複製 slot 會把那段內容漏掉。
+   */
+  function cloneDeep(node) {
+    if (node.nodeType !== 1) return node.cloneNode(true);
+
+    if (node.localName === 'slot' && typeof node.assignedNodes === 'function') {
+      const frag = node.ownerDocument.createDocumentFragment();
+      let list = [];
+      try {
+        list = node.assignedNodes({ flatten: true });
+      } catch (e) {
+        list = [];
+      }
+      // 沒有被投影任何東西時，slot 自己的子節點就是後備內容
+      if (!list.length) list = Array.from(node.childNodes);
+      for (const child of list) frag.appendChild(cloneDeep(child));
+      return frag;
+    }
+
+    const copy = node.cloneNode(false);
+    // 有 shadow root 時，畫面上看到的是 shadow 的內容，light 子節點只有透過 slot 才會出現
+    const source = node.shadowRoot ? node.shadowRoot.childNodes : node.childNodes;
+    for (const child of Array.from(source)) copy.appendChild(cloneDeep(child));
+    return copy;
+  }
+
   /** 標記隱藏 -> 複製 -> 還原標記，回傳可以放心改的複本 */
   function snapshot(liveEl) {
     let marked = 0;
     try {
       marked = markHidden(liveEl);
-      return { clone: liveEl.cloneNode(true), marked };
+      const clone = anyShadowHost(liveEl) ? cloneDeep(liveEl) : liveEl.cloneNode(true);
+      return { clone, marked };
     } finally {
       unmarkHidden(liveEl);
     }
@@ -187,11 +233,26 @@
    * 只要該元素的文字量超過整體三成就不動它 —— 名稱像廣告但其實是內容包裝的情況很常見，
    * 誤刪整篇文章的代價遠大於留下一段側欄。
    */
+  /**
+   * 程式碼區塊內部一律不清理。
+   * 語法標示器會把每個 token 包成 <span class="token comment">、class="token string" 之類，
+   * 那些名字會誤中 JUNK_RE 的 comments / share 等關鍵字，把程式碼啃掉一塊 ——
+   * 而且是無聲的，輸出看起來還是一段程式碼，只是少了幾行。
+   */
+  function insideCode(node) {
+    for (let parent = node.parentNode; parent; parent = parent.parentNode) {
+      const tag = parent.tagName;
+      if (tag === 'PRE' || tag === 'CODE') return true;
+    }
+    return false;
+  }
+
   function stripJunk(scope, totalLength) {
     const limit = Math.max(200, totalLength * 0.3);
     let count = 0;
     for (const node of Array.from(scope.querySelectorAll('*'))) {
       if (!node.parentNode) continue;
+      if (insideCode(node)) continue;
       const name = (node.getAttribute('id') || '') + ' ' + (node.getAttribute('class') || '');
       const byName = JUNK_RE.test(name);
       if (!byName && !JUNK_TAGS.has(node.tagName)) continue;

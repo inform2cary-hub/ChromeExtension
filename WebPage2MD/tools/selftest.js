@@ -430,6 +430,22 @@ function testCodeBlocks() {
     md('<pre><code class="language-plaintext">a</code></pre>') === '```\na\n```');
   check('可關閉語言推測',
     md('<pre><code class="language-js">a</code></pre>', { codeLanguageFromClass: false }) === '```\na\n```');
+
+  // 自訂元素（web component）不在區塊白名單裡。若被當成行內處理，裡面的 <pre>
+  // 到不了區塊處理器，整段程式碼會塌成一行純文字 —— MDN 的 <mdn-code-example> 就是這樣。
+  check('自訂元素包住程式碼區塊時仍輸出圍籬',
+    md('<mdn-code-example class="brush: js"><div class="code-example"><pre class="brush: js"><code>a=1</code></pre></div></mdn-code-example>')
+      === '```js\na=1\n```',
+    JSON.stringify(md('<mdn-code-example class="brush: js"><div class="code-example"><pre class="brush: js"><code>a=1</code></pre></div></mdn-code-example>')));
+  check('自訂元素包住段落時也當區塊',
+    md('<my-card><p>a</p><p>b</p></my-card>') === 'a\n\nb',
+    JSON.stringify(md('<my-card><p>a</p><p>b</p></my-card>')));
+  check('沒有區塊內容的自訂元素維持行內',
+    md('<p>x <my-badge>new</my-badge> y</p>') === 'x new y',
+    JSON.stringify(md('<p>x <my-badge>new</my-badge> y</p>')));
+  check('標準行內標籤包住區塊時不改行為（卡片連結）',
+    md('<a href="/x"><div>a</div></a>').indexOf('](') > 0,
+    JSON.stringify(md('<a href="/x"><div>a</div></a>')));
   check('程式碼裡的 Markdown 符號不會被轉義',
     md('<pre><code>a * b _c_ [d]</code></pre>') === '```\na * b _c_ [d]\n```',
     md('<pre><code>a * b _c_ [d]</code></pre>'));
