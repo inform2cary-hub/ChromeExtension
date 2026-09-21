@@ -14,10 +14,12 @@ Every claim below is true of the shipped code. If you change the code, change th
 
 > This is the permission that will decide your review. Read it once more before pasting.
 
-**The dashboard field caps at 1,000 characters and truncates silently.** Paste the short version
-below into the permission field; the full version that follows is too long for it and belongs in
-the **Test instructions** field (left nav → Access → Test instructions), which reviewers also
-read and which has room for it.
+**Dashboard field limits, both of which truncate silently:** a permission justification caps at
+**1,000 characters**, and Test instructions (left nav → Access) caps at **500**. Paste the short
+version below into the permission field. The fuller version that follows does not fit either
+field - it is kept here as the reference the other two are derived from. What actually goes into
+Test instructions is in `store/paste/test-instructions-en.txt`: how to test, plus the file and
+call sites a reviewer can check the debugger claims against.
 
 **Paste this into the `debugger` permission field (English, 998 characters):**
 
