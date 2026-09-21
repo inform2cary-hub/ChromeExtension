@@ -14,7 +14,22 @@ Every claim below is true of the shipped code. If you change the code, change th
 
 > This is the permission that will decide your review. Read it once more before pasting.
 
-**Paste this (English):**
+**The dashboard field caps at 1,000 characters and truncates silently.** Paste the short version
+below into the permission field; the full version that follows is too long for it and belongs in
+the **Test instructions** field (left nav → Access → Test instructions), which reviewers also
+read and which has room for it.
+
+**Paste this into the `debugger` permission field (English, 998 characters):**
+
+```
+Page.printToPDF is Chrome's own print engine and the only way to produce a PDF with real, selectable, searchable text. It is reachable only through the DevTools Protocol, and chrome.debugger is the only API Chrome gives extensions for sending CDP commands. No lesser permission does this: captureVisibleTab returns an image, not a document; chrome.printing targets ChromeOS printers; window.print() cannot be automated or return a file.
+
+It is attached only in response to an explicit user action - the toolbar button, the context menu, or Alt+P - and only to the tab being exported. It is detached in a finally block, so it detaches on failure and cancellation too. Chrome shows its own "debugging this browser" bar throughout.
+
+Exactly three CDP commands are ever sent: Page.enable, Page.printToPDF, and Emulation.setEmulatedMedia when the user turns on screen output. The Network domain is never enabled, no other tab is read, Runtime.evaluate is never used, and nothing is transmitted anywhere.
+```
+
+**Fuller version — paste into Test instructions, not the permission field:**
 
 ```
 This extension converts the user's current web page into a PDF with real, selectable, searchable
@@ -156,20 +171,19 @@ user asks for that page to be exported.
 **`scripting` — paste this (English):**
 
 ```
-Before printing, the extension injects a preparation script into the tab being exported. That
-script implements the user's own page-cleanup settings: keep only the main article, unstick
-fixed and floating elements that would otherwise repeat on every printed page, force a light
-background so dark-themed sites do not print as solid black, expand collapsed <details>
-sections, scroll the page once so lazy-loaded images have loaded, and hide any elements matching
-CSS selectors the user has entered. A second injection restores the page afterwards.
+Before printing, the extension injects a preparation script into the tab being exported. It
+implements the user's own page-cleanup settings: keep only the main article, unstick fixed
+elements that would otherwise repeat on every printed page, force a light background so dark
+sites do not print as solid black, expand collapsed sections, scroll once so lazy-loaded images
+have loaded, and hide elements matching CSS selectors the user entered. A second injection
+restores it afterwards.
 
-chrome.scripting.executeScript is the only API that can make these changes, and a statically
-declared content script is not an acceptable substitute: it would have to run on every page the
-user visits, whereas injection runs only on the one tab the user is exporting, only at the moment
-of export. All changes are applied through a single <style> element and data-w2p-* attributes and
-are reverted in a finally block - including scroll position, <details> open state and image
-loading attributes - so the page is restored even if the export fails. The script reads the page
-only to prepare and restore it; nothing read from the page is stored or transmitted.
+A statically declared content script is not an acceptable substitute: it would have to run on
+every page the user visits, whereas injection runs only on the tab being exported, only at the
+moment of export. All changes are applied through a single <style> element and data-w2p-*
+attributes and reverted in a finally block - including scroll position, collapsed-section state
+and image loading attributes - so the page is restored even if the export fails. Nothing read
+from the page is stored or transmitted.
 ```
 
 **繁體中文（自用參考）**

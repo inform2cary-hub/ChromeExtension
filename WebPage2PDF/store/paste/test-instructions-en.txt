@@ -1,0 +1,46 @@
+This extension converts the user's current web page into a PDF with real, selectable, searchable
+text. It does this by calling Chrome's own print-to-PDF engine via the DevTools Protocol command
+Page.printToPDF.
+
+Page.printToPDF is reachable only through the Chrome DevTools Protocol, and chrome.debugger is
+the only API surface Chrome exposes to extensions for sending CDP commands. There is no
+non-debugger alternative that produces this result: chrome.tabs.captureVisibleTab yields an image
+of the viewport, not a document, and would make the text unselectable and unsearchable;
+chrome.printing targets ChromeOS printers, not PDF generation; and window.print() only opens the
+system print dialog, which cannot be automated, cannot apply the user's saved paper, margin,
+header/footer and page-range settings, and cannot return a file to the extension.
+
+Scope and duration of use:
+- The debugger is attached only in direct response to an explicit user action: clicking the
+  toolbar button's Export control, choosing the context-menu item, or pressing the Alt+P command.
+  It is never attached on browser startup, on page load, or on any automatic trigger.
+- It is attached to exactly one tab: the tab the user is exporting. tabId is taken from the
+  active tab at the moment of the user's action.
+- Exactly three CDP commands are sent, all in the printing path: Page.enable, Page.printToPDF,
+  and - only when the user has enabled the "use screen styles instead of print styles" option -
+  Emulation.setEmulatedMedia with media "screen". No other CDP domain is enabled or used.
+- It is detached immediately when printing finishes, in a finally block, so it is detached on
+  failure and on cancellation as well as on success. Attachment lasts for the duration of one
+  export, typically a few seconds.
+- Chrome displays its own "<extension> is debugging this browser" infobar on the tab for the
+  whole time the debugger is attached, so the user has continuous, browser-provided notice.
+
+What this extension explicitly does NOT do with the debugger:
+- It does not enable, use, or listen to the Network domain. It does not intercept, inspect,
+  modify, or record any network request or response.
+- It does not attach to any tab other than the one being exported, and does not read the content
+  of other tabs.
+- It does not use Runtime.evaluate or any other CDP command to execute code in the page.
+- It does not remain attached in the background, across navigations, or between exports.
+- It does not transmit the page, the PDF, or any derived data anywhere. The extension makes no
+  network requests at all; the generated PDF is written straight to the user's downloads.
+
+To verify the claims above: the only chrome.debugger calls in the package are in
+src/background/service-worker.js (attach, detach, sendCommand), and the only CDP methods ever
+passed to sendCommand are "Page.enable", "Page.printToPDF" and "Emulation.setEmulatedMedia".
+The package contains no fetch, XMLHttpRequest or WebSocket call, and declares no host
+permissions, so it cannot make a network request at all.
+
+No credentials are needed to test. Open any ordinary web page, click the toolbar button, and
+press "Convert to PDF". Chrome will show its own debugging notice on the tab while the export
+runs; it disappears when the PDF is saved.

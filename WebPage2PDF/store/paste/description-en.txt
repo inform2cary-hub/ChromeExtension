@@ -1,0 +1,29 @@
+Turn the page you are reading into a proper PDF — one where you can select the text, search it, copy from it, and follow the links. Not a screenshot in a PDF wrapper.
+
+Web Page to PDF drives Chrome's own print engine, the same pipeline Chrome uses when you choose "Save as PDF" from the print dialog. That means the output is real, structured text: searchable, copyable, and accessible to screen readers.
+
+WHAT YOU GET
+
+• Text you can actually use — select it, search it, quote it. Links stay clickable.
+• Paper and layout control — A3, A4, A5, B4, B5, Letter, Legal, Tabloid, or a custom size in millimetres. Portrait or landscape. Margin presets, or set each of the four edges yourself. Scale the output and export only the pages you want (for example "1-5, 8").
+• Headers and footers — put the page title, URL, date, page number, or "page X of Y" in any of the four corners, at the point size you choose.
+• Automatic page cleanup before export — drop navigation and sidebars and keep just the article, unstick floating headers that otherwise repeat on every page, force a white background so dark sites do not print as a wall of black, expand collapsed sections, scroll the page first so lazy-loaded images are actually there, and hide anything else you name with a CSS selector.
+• Accessible, navigable PDFs — tagged PDF output carries the document's semantic structure, and an optional bookmark outline is built from the page's own heading levels.
+• Filename templates — build names from {title}, {host}, {date}, {datetime} and more, and drop everything into a subfolder of your downloads folder.
+• Fast paths — the toolbar button, a right-click menu item, or Alt+P.
+
+HOW IT WORKS, AND WHY IT ASKS FOR "DEBUGGER"
+
+Chrome exposes its print-to-PDF engine only through the Chrome DevTools Protocol, and the only API Chrome gives an extension to reach that protocol is chrome.debugger. So when you press Export, the extension attaches to that one tab, asks Chrome to print it, and detaches immediately — success or failure. Chrome shows its own "is debugging this browser" bar the whole time, so you always know. Nothing else is done with that access: no reading other tabs, no watching network traffic, no staying attached in the background.
+
+PRIVACY
+
+Everything happens on your computer. The extension has no server, makes no network requests, and collects nothing. Your settings live in your browser's local storage. Page content never leaves the machine.
+
+LANGUAGES
+
+The interface is available in English and Traditional Chinese. English is the default; switch it on the options page.
+
+GOOD TO KNOW
+
+Chrome's own pages (chrome://), the Web Store, and other extension pages cannot be exported — the browser blocks extensions there. For those, the popup offers a fallback that opens Chrome's normal print dialog. If a tab already has DevTools open, close it first: only one debugger can be attached to a tab at a time.

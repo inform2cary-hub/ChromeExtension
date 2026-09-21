@@ -1,0 +1,120 @@
+WebPage2MD - Chrome Web Store 權限理由（英文，逐段貼進 Dashboard）
+======================================================================
+
+
+----------------------------------------------------------------------
+[1] debugger
+----------------------------------------------------------------------
+
+Page.printToPDF is Chrome's own print engine and the only way to produce a PDF with real, selectable, searchable text. It is reachable only through the DevTools Protocol, and chrome.debugger is the only API Chrome gives extensions for sending CDP commands. No lesser permission does this: captureVisibleTab returns an image, not a document; chrome.printing targets ChromeOS printers; window.print() cannot be automated or return a file.
+
+It is attached only in response to an explicit user action - the toolbar button, the context menu, or Alt+P - and only to the tab being exported. It is detached in a finally block, so it detaches on failure and cancellation too. Chrome shows its own "debugging this browser" bar throughout.
+
+Exactly three CDP commands are ever sent: Page.enable, Page.printToPDF, and Emulation.setEmulatedMedia when the user turns on screen output. The Network domain is never enabled, no other tab is read, Runtime.evaluate is never used, and nothing is transmitted anywhere.
+
+
+----------------------------------------------------------------------
+[2] downloads
+----------------------------------------------------------------------
+
+The extension's output is a PDF file, and chrome.downloads.download is how it is written to the
+user's computer. It is called once per export, only after the user has triggered an export, and
+only with the PDF that export just produced. The extension does not enumerate, search, open,
+modify, or delete the user's other downloads, and does not use the downloads API to fetch
+anything from the network. If the user has enabled "always ask where to save", the saveAs flag is
+passed so Chrome shows its own Save As dialog.
+
+
+----------------------------------------------------------------------
+[3] offscreen
+----------------------------------------------------------------------
+
+Page.printToPDF returns the PDF as a base64 string. To hand that to chrome.downloads.download as
+a file, the extension needs a Blob URL - but a Manifest V3 service worker has no DOM and no
+URL.createObjectURL, and passing a multi-megabyte PDF as a data: URL is truncated by the
+downloads API for larger documents. An offscreen document is the API Chrome provides for exactly
+this: a DOM context the extension can use for work the service worker cannot do.
+
+The offscreen document is created with the BLOBS reason, used only to create and then revoke one
+Blob URL for the PDF that was just generated, and closed when the export completes. It loads no
+remote content, renders nothing to the user, and uses no extension API other than
+chrome.runtime for messaging (Chrome does not expose any other chrome.* API inside an offscreen
+document). The actual download call runs back in the service worker.
+
+
+----------------------------------------------------------------------
+[4] activeTab
+----------------------------------------------------------------------
+
+When the user triggers an export, the extension needs access to that one tab in order to prepare
+it for printing and to identify it to the print engine. activeTab grants exactly that: access to
+the tab the user acted on, granted by that action, and only for as long as it is needed. This is
+deliberately used instead of host permissions - the extension asks for no host permissions at
+all, so it has no standing access to any site. It gains access to a page only at the moment the
+user asks for that page to be exported.
+
+
+----------------------------------------------------------------------
+[5] scripting
+----------------------------------------------------------------------
+
+Before printing, the extension injects a preparation script into the tab being exported. It
+implements the user's own page-cleanup settings: keep only the main article, unstick fixed
+elements that would otherwise repeat on every printed page, force a light background so dark
+sites do not print as solid black, expand collapsed sections, scroll once so lazy-loaded images
+have loaded, and hide elements matching CSS selectors the user entered. A second injection
+restores it afterwards.
+
+A statically declared content script is not an acceptable substitute: it would have to run on
+every page the user visits, whereas injection runs only on the tab being exported, only at the
+moment of export. All changes are applied through a single <style> element and data-w2p-*
+attributes and reverted in a finally block - including scroll position, collapsed-section state
+and image loading attributes - so the page is restored even if the export fails. Nothing read
+from the page is stored or transmitted.
+
+
+----------------------------------------------------------------------
+[6] storage
+----------------------------------------------------------------------
+
+The extension remembers the user's own export settings so they do not have to be re-entered on
+every page: paper size and orientation, margins, scale, page range, header and footer fields and
+font size, tagged-PDF and bookmark-outline options, page-cleanup options, the filename template,
+the download subfolder, and the interface language. These are written to chrome.storage.local and
+stay on the user's machine; chrome.storage.sync is not used, so nothing is uploaded to a Google
+account. No page content, browsing history, or personal data is stored.
+
+
+----------------------------------------------------------------------
+[7] contextMenus
+----------------------------------------------------------------------
+
+The extension adds two right-click menu items: "Convert this page to PDF", which starts an export
+of the current page, and an item that opens the extension's options page. This gives users a way
+to export without moving the mouse to the toolbar. The menu items are registered once on install,
+appear only in the page context menu, and do not read or act on page content by themselves - they
+simply invoke the same export the toolbar button does.
+
+
+----------------------------------------------------------------------
+[8] Host permissions
+----------------------------------------------------------------------
+
+This extension declares no host permissions and no optional host permissions. It has no standing
+access to any website. Access to a page is obtained only through activeTab, granted by the user's
+own action at the moment they ask for that page to be exported, and it makes no network requests
+of any kind.
+
+
+----------------------------------------------------------------------
+[9] Remote code
+----------------------------------------------------------------------
+
+No remote code. All JavaScript, HTML and CSS that this extension executes is contained in the
+uploaded package and is reviewable in it. The extension loads no scripts from any server,
+includes no CDN <script> tags, uses no eval(), no new Function(), no importScripts() of a remote
+URL, no remotely hosted WebAssembly, and no remote module imports. It makes no network requests
+at all - it has no host permissions and never contacts any server, including the developer's.
+Chrome's DevTools Protocol commands sent through chrome.debugger are fixed method names and
+parameters constructed in the packaged code from the user's own settings; they are not fetched
+code and are not executed as script in the page.
